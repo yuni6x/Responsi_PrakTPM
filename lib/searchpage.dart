@@ -3,18 +3,17 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'movie_detail_page.dart';
 import 'login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Movie {
   final String title;
   final String year;
   final String poster;
-  // final String plot;
 
   Movie({
     required this.title,
     required this.year,
     required this.poster,
-    // required this.plot,
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
@@ -22,7 +21,6 @@ class Movie {
       title: json['Title'],
       year: json['Year'],
       poster: json['Poster'],
-      // plot: json['Plot'],
     );
   }
 }
@@ -68,10 +66,29 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  void _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Movie Search')),
+      appBar: AppBar(
+        title: Text('Movie Search'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              _logout();
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
@@ -135,10 +152,6 @@ class MovieDetailPage extends StatelessWidget {
               'Year: ${movie.year}',
               style: TextStyle(fontSize: 18.0),
             ),
-            // Text(
-            //   'Year: ${movie.plot}',
-            //   style: TextStyle(fontSize: 18.0),
-            // ),
           ],
         ),
       ),
